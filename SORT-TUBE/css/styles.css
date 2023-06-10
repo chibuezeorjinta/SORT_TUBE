@@ -1,0 +1,170 @@
+@import url('https://fonts.googleapis.com/css2?family=Montagu+Slab:wght@400;500;600;700&display=swap');
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+main {
+    width: 100vw;
+    height: 100vh;
+    background-color: #7AB683;
+    display: grid;
+    grid-template-rows: min-content 1fr;
+    font-family: 'Montagu Slab', serif;
+}
+
+header {
+    display: flex;
+    padding: 20px;
+    align-items: center;
+    justify-items: center;
+    justify-content: space-between;
+}
+
+.search-bar {
+    width: 450px;
+    background-color: white;
+    border-radius: 24px;
+    padding: 4px;
+    padding-left: 12px;
+    display: grid;
+    grid-template-columns: 90% 10%;
+}
+
+.search-bar > input {
+    border: 0;
+    outline: 0;
+    border-right: 1px solid gray;
+    padding-right: 4px;
+    background-color: transparent;
+}
+
+.search {
+    background-color: transparent;
+    border: 0;
+    outline: 0;
+}
+
+.search > img {
+    width: 25px;
+    height: 25px;
+}
+
+.search-container, .profile {
+    display: flex;
+    justify-content: space-around;
+    justify-items: center;
+    align-items: center;
+    gap: 32px;
+}
+
+.mic {
+    background-color: transparent;
+    border: 0;
+}
+
+.avatar {
+    height: 35px;
+    width: 35px;
+    border: 1px solid black;
+    border-radius: 100%;
+    background-color: rgb(206, 206, 196);
+}
+
+.profile .logout {
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    font-size: 18px;
+}
+
+.main_content {
+    display: grid;
+    grid-template-columns: 20% 80%;
+}
+
+.sidebar {
+    padding: 32px;
+    padding-top: 30px;
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    height: 100%;
+}
+
+.sidebar_nav-item {
+    display: flex;
+    gap: 32px;
+    padding: 8px;
+    justify-items: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.sidebar_nav-item .icon {
+    width: 20px;
+}
+
+.sidebar_nav-item .nav_title {
+    flex: 1;
+    font-size: 16px;
+}
+
+.sidebar_nav-item p {
+    font-size: 12px;
+}
+
+.content {
+    display: grid;
+    grid-template-rows: 1fr min-content;
+}
+
+.content-wrapper {
+    background-color: white;
+    padding: 20px;
+}
+
+.feed-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 121px;
+    row-gap: 32px;
+}
+
+.video-card {
+    height: 200px;
+    display: grid;
+    grid-template-rows: 1fr min-content;
+}
+
+.video-card_thumbnail img {
+    width: 100%;
+}
+
+.social-actions_buttons {
+    display: flex;
+    gap: 12px;
+    padding: 8px;
+}
+
+.social-actions_button {
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    width: 2px;
+}
+
+footer {
+    font-size: 40px;
+    letter-spacing: 2em;
+    padding-left: 12px;
+}
