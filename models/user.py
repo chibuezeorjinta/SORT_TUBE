@@ -6,12 +6,14 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 import json
 import os
-import datetime
 import uuid
+from models.bucket import Bucket
 
 
 class User:
-    def __init__(self, username, secret_path, scope):
+    __CREDENTIALS = {}
+
+    def __init__(self, username, secret_path, scope, storage=None):
         """
         :type username: str
         :type secret_path: str
@@ -31,26 +33,46 @@ class User:
             self.scopes = scope
         if type(username) is not str:
             raise TypeError("username string is needed")
-        if username == None:
+        if username is None:
             raise SyntaxError("USAGE=> username : str, secret_path : str, scope : []")
         else:
             self.username = username
-        self.id = self.username + '.' + str(uuid.uuid4())
-        self.dump_file = "json/" + self.id + ".json"
-        #test_fold = 'C:/Users/LENOVO/Desktop/software_main/portfolio/tests'
-        #file_location = os.path.join(test_fold, self.dump_file)
+        self.id = str(uuid.uuid4())
 
+        self.storage = storage
+
+        self.UserId = self.username + '.' + self.id
+        self.dump_file = "json/" + self.UserId + ".json"
+        self.credentials: object = None
+        self.youtube: build = None
+
+        self.ID_LIST: list = []
+        self.Buckets: object = None
+        self.SubscriptionList: list = []
+
+    def set_storage(self, storage):
+        self.storage = storage
+        User.__CREDENTIALS = self.storage.loadcred()
     def authenticate(self):
-        flow = InstalledAppFlow.from_client_secrets_file(
-            self.client_secrets_path, self.scopes)
-        self.credentials = flow.run_local_server(port=5665)
+        if self.credentials is None:
+            flow: InstalledAppFlow = InstalledAppFlow.from_client_secrets_file(
+                self.client_secrets_path, self.scopes)
+            self.credentials = flow.run_local_server(port=5665, open_browser=False)
+            self.ID_LIST = [self.id, self.credentials]
+            if User.__CREDENTIALS is None:
+                User.__CREDENTIALS = {}
+            User.__CREDENTIALS[self.username] = self.ID_LIST
+            print(User.__CREDENTIALS)
+            self.storage.savecred()
+        else:
+            print(User.__CREDENTIALS)
 
     def login(self):
         if self.credentials is None:
             print("Authentication is required. Please authenticate first using the 'authenticate' method.")
             return
 
-        self.youtube = build('youtube', 'v3', credentials=self.credentials)
+        self.youtube: build = build('youtube', 'v3', credentials=self.credentials)
         print("Logged in successfully.")
 
     def get_subscriptions(self):
@@ -80,17 +102,31 @@ class User:
             if 'items' in subscriptions:
                 for subscription in subscriptions['items']:
                     print(subscription['snippet']['title'])
+
             if 'items' in sublist:
                 sublist['items'].append(subscriptions['items'])
 
         with open(self.dump_file, "w", encoding="utf-8") as deep:
             json.dump(sublist, deep)
-        # if 'items' in sublist:
-        #     for subscription in subscriptions['items']:
-        #         print(subscription['snippet']['title'])
-        # else:
-        #   print("No subscriptions found.")
 
+        self.user_buckets()
+
+    def user_buckets(self):
+        try:
+            with open(self.dump_file) as fp:
+                MyChannelList: dict = json.load(fp)
+                self.Buckets = Bucket(MyChannelList)
+        except FileExistsError:
+            print("Subscription List Does Not Exist. Use get_subscription Method")
+
+    @staticmethod
+    def credentials() -> dict:
+        """
+        return class variable
+            type: object
+        """
+        print(User.__CREDENTIALS)
+        return User.__CREDENTIALS
 #
 # class User:
 #     def __init__(self, client_id, redirect_uri):

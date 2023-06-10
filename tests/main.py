@@ -1,4 +1,5 @@
 from models.user import User
+from models.storage import storage
 
 import json
 import os
@@ -21,6 +22,23 @@ except FileExistsError as e:
 scopes = ['https://www.googleapis.com/auth/youtube.readonly']
 
 mytry = User("danielorjinta", new_fp, scopes)
+mytry.set_storage(storage)
+storage = storage.set_userclass(mytry)
+
+
 mytry.authenticate()
+User.credentials()
 mytry.login()
 mytry.get_subscriptions()
+# #
+# kunle = User('Engr_kunle', new_fp, scopes)
+# kunle.authenticate()
+# kunle.login()
+# kunle.get_subscriptions()
+#Boss = User('Boss', new_fp, scopes)
+
+# new = User("kunle", new_fp, scopes)
+#
+# new.authenticate()
+# new.login()
+# new.get_subscriptions()
