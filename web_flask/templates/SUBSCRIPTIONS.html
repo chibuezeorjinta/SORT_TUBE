@@ -1,0 +1,41 @@
+{% extends 'USER.html' %}
+
+{% block Mode %}
+	My Subscriptions
+{% endblock %}
+
+{% block hello %}
+	Hello, {{ username }}
+{% endblock %}
+
+{% block Content %}
+<table class="table table-bordered">
+	<thead>
+	  <tr>
+	    <th>Channel Name</th>
+	    <th>Actions</th>
+	    <!-- Add more column headers as needed -->
+	  </tr>
+	</thead>
+	<tbody>
+	{% if 'items' in subscriptions %}
+	  {% for sub in subscriptions['items'] %}
+		{% if 'snippet' in sub %}
+		  <tr>
+			<td>{{ sub['snippet']['title'] }}</td>
+			<td>
+			  <button class="btn btn-primary" onclick="location.href='/user/{{ sub['snippet']['title'] }}/view?channel={{ sub['snippet']['title'] }}'">View</button>
+			</td>
+		  </tr>
+		{% endif %}
+	  {% endfor %}
+	{% else %}
+	  <p>
+		items is empty
+	  </p>
+	{% endif %}
+	</tbody>
+</table>
+{% endblock %}
+
+      

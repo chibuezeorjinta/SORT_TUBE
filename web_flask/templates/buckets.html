@@ -1,0 +1,42 @@
+{% extends 'USER.html' %}
+
+{% block Mode %}
+	My Buckets
+{% endblock %}
+
+{% block hello %}
+	Hello, {{ username }}
+{% endblock %}
+
+{% block Content %}
+{% if buckets %}
+<table class="table table-bordered">
+	<thead>
+	  <tr>
+	    <th>Bucket Name</th>
+	    <th>View Bucket</th>
+		  <th>Update Bucket</th>
+	    <!-- Add more column headers as needed -->
+	  </tr>
+	</thead>
+	<tbody>
+	  {% for bucket in buckets %}
+	  <tr>
+	    <td>{{ bucket }}</td>
+	    <td>
+	      <button class="btn btn-outline btn-info" onclick="location.href='/get_bucket?bucket={{ bucket }}'">View</button>
+	    </td>
+		  <td>
+			  <button class="btn btn-outline btn-info" onclick="location.href='/update_bucket?bucket={{ bucket }}'">Update</button>
+		  </td>
+	  </tr>
+	  {% endfor %}
+	</tbody>
+</table>
+{% else %} 
+<p>
+	No Existing Bucket. Create New Bucket.
+</p>
+{% endif %}
+<form action="/create_bucket" method="POST"><input type="text" name="bucket_name" required><button type="submit">Submit</button></form>
+{% endblock %}

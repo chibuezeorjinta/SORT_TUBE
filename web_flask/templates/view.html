@@ -1,0 +1,42 @@
+{% extends 'USER.html' %}
+
+{% block Mode %}
+	Viewing {{ bucket }}
+{% endblock %}
+
+{% block hello %}
+	Hello, {{ username }}
+{% endblock %}
+
+{% block Content %}
+<div class="feed-grid">
+  {% for video_id in video_ids %}
+  <div class="video-card">
+    <div class="video-card_thumbnail">
+      <img src="{{ url_for('static', filename='img/video.png') }}" alt="" />
+    </div>
+    <div class="video-card_action_container">
+      <div class="social-actions_buttons">
+        <button class="social-action-button">
+          <img src="{{ url_for('static', filename='img/heart.svg') }}" alt="" />
+        </button>
+        <button class="social-action-button">
+          <img src="{{ url_for('static', filename='img/message.svg') }}" alt="" />
+        </button>
+        <button class="social-action-button">
+          <img src="{{ url_for('static', filename='img/share.svg') }}" alt="" />
+        </button>
+        <div class="spacer"></div>
+        <button class="social-action-button">
+          <img src="{{ url_for('static', filename='img/menu.svg') }}" alt="" />
+        </button>
+      </div>
+    </div>
+    <div class="video-wrapper">
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/{{ video_id }}" frameborder="0" allowfullscreen></iframe>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
+

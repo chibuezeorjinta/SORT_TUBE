@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}" />
+    <title>Sort Tube</title>
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo" alt="" />
+
+        <div class="search-container">
+          <div class="search-bar">
+            <input type="text" placeholder="search" />
+            <button class="search"><img src="{{ url_for('static', filename='img/search.svg') }}" alt="" /></button>
+          </div>
+          <button class="mic"><img src="{{ url_for('static', filename='img/mic.svg') }}" alt="" /></button>
+        </div>
+
+        <div class="profile">
+          <div class="notification">
+            <img src="{{ url_for('static', filename='img/notification.svg') }}" alt="" />
+          </div>
+          <div class="avatar"></div>
+          <button class="login" onclick="location.href='/log-on'">Login</button>
+        </div>
+      </header>
+      <div class="main_content">
+        <div class="sidebar">
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/user.svg') }}" alt="" /></div>
+            <div class="nav_title">Hello, User</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/home.svg') }}" alt="" /></div>
+            <div class="nav_title">Home</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/categories.svg') }}" alt="" /></div>
+            <div class="nav_title">Buckets</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/subscription.svg') }}" alt="" /></div>
+            <div class="nav_title">Subscriptions</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/explore.svg') }}" alt="" /></div>
+            <div class="nav_title">Explore</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/settings.svg') }}" alt="" /></div>
+            <div class="nav_title">Settings</div>
+          </div>
+          <div class="spacer"></div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/email.svg') }}" alt="" /></div>
+            <div class="nav_contact">
+              <p>contact info:</p>
+              <p>mail@sortubemail.com</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="content-wrapper">
+            <p>recent feed</p>
+            <div class="feed-grid">
+              <div class="video-card">
+                <div class="video-card_thumbnail">
+                  <img src="{{ url_for('static', filename='img/video.png') }}" alt="" />
+                </div>
+                <div class="video-card_action_container">
+                  <div class="social-actions_buttons">
+                    <button class="social-action-button">
+                      <img src="{{ url_for('static', filename='img/heart.svg') }}" alt="" /></button
+                    ><button class="social-action-button">
+                      <img src="{{ url_for('static', filename='img/message.svg') }}" alt="" /></button
+                    ><button class="social-action-button">
+                      <img src="{{ url_for('static', filename='img/share.svg') }}" alt="" />
+                    </button>
+                    <div class="spacer"></div>
+                    <button class="social-action-button">
+                      <img src="{{ url_for('static', filename='img/menu.svg') }}" alt="" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <footer>SORTUBE</footer>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>
+
+<script>
+  
+</script>

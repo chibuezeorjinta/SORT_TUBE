@@ -1,0 +1,20 @@
+{% extends 'USER.html' %}
+
+{% block Mode %}
+	My {{ buckets }}
+{% endblock %}
+
+{% block hello %}
+	Hello, {{ username }}
+{% endblock %}
+
+{% block Content %}
+  <form action="/update-form/{{ buckets }}" method="POST">
+    <select name="subscription_title">
+      {% for subscription in subscriptions['items'] %}
+        <option value="{{ subscription['snippet']['title'] }}">{{ subscription['snippet']['title'] }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Submit</button>
+  </form>
+{% endblock %}

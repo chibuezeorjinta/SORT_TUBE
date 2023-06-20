@@ -4,6 +4,9 @@
 # from google.oauth2 import google_auth
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+
+import datetime
 import json
 import os
 import uuid
@@ -11,15 +14,16 @@ from models.bucket import Bucket
 
 
 class User:
-    __CREDENTIALS = {}
+    CREDENTIALS = {}
+    Instances = []
 
-    def __init__(self, username, secret_path, scope, storage=None):
+    def __init__(self, username="", secret_path="", scope=[], storage=None):
         """
         :type username: str
         :type secret_path: str
         :type scope: list
         """
-        if secret_path is None:
+        if secret_path == "":
             raise SyntaxError("USAGE=> username : str, secret_path : str, scope : []")
         if type(secret_path) is not str:
             raise TypeError("path is needed")
@@ -27,7 +31,7 @@ class User:
             self.client_secrets_path = secret_path
         if type(scope) is not list:
             raise TypeError("scope list is needed")
-        if scope is None:
+        if scope is []:
             raise SyntaxError("USAGE=> username : str, secret_path : str, scope : []")
         else:
             self.scopes = scope
@@ -37,35 +41,54 @@ class User:
             raise SyntaxError("USAGE=> username : str, secret_path : str, scope : []")
         else:
             self.username = username
-        self.id = str(uuid.uuid4())
+
+        self.id: str = ""
 
         self.storage = storage
 
-        self.UserId = self.username + '.' + self.id
-        self.dump_file = "json/" + self.UserId + ".json"
+
         self.credentials: object = None
         self.youtube: build = None
 
         self.ID_LIST: list = []
-        self.Buckets: object = None
-        self.SubscriptionList: list = []
+        self.Buckets: object = Bucket()
+        self.SubscriptionList: dict = {}
+
+
+    @classmethod
+    def get_instance(cls, args: str) -> object:
+        for existing in User.Instances:
+            if existing.username == args:
+                return existing
+        return False
+        #for args in User.__CREDENTIALS.keys():
+
+    # def append_instance(self):
+    #     User.Instances.append(self)
 
     def set_storage(self, storage):
         self.storage = storage
-        User.__CREDENTIALS = self.storage.loadcred()
+        User.CREDENTIALS = self.storage.loadcred()
+
     def authenticate(self):
-        if self.credentials is None:
+        if self.credentials is None or not self.credentials.valid:
             flow: InstalledAppFlow = InstalledAppFlow.from_client_secrets_file(
                 self.client_secrets_path, self.scopes)
-            self.credentials = flow.run_local_server(port=5665, open_browser=False)
-            self.ID_LIST = [self.id, self.credentials]
-            if User.__CREDENTIALS is None:
-                User.__CREDENTIALS = {}
-            User.__CREDENTIALS[self.username] = self.ID_LIST
-            print(User.__CREDENTIALS)
-            self.storage.savecred()
-        else:
-            print(User.__CREDENTIALS)
+            self.credentials = flow.run_local_server(port=5665, open_browser=True)
+            if self.credentials is None or not self.credentials.valid:
+                return False
+            else:
+                #self.login()
+                self.ID_LIST = [self.id, self.credentials]
+                if User.CREDENTIALS is None:
+                    User.CREDENTIALS = {}
+                if self.username not in User.CREDENTIALS.keys():
+                    User.CREDENTIALS[self.username] = self.ID_LIST
+                print(User.CREDENTIALS)
+                #.self.storage.savecred()
+
+        # else:
+        #     self.login()
 
     def login(self):
         if self.credentials is None:
@@ -73,7 +96,15 @@ class User:
             return
 
         self.youtube: build = build('youtube', 'v3', credentials=self.credentials)
-        print("Logged in successfully.")
+        user_info_service = build('oauth2', 'v2', credentials=self.credentials)
+        user_info = user_info_service.userinfo().get().execute()
+        print(user_info)
+
+        self.username = user_info['name']
+        self.UserId = self.username + '.' + self.id
+        self.dump_file = "json/" + self.UserId + ".json"
+        self.get_subscriptions()
+        return True
 
     def get_subscriptions(self):
         if self.youtube is None:
@@ -97,37 +128,100 @@ class User:
                 pageToken=new_page
             ).execute()
             new_page = subscriptions.get('nextPageToken')
-            if not subscriptions.get('nextPageToken'):
-                break
-            if 'items' in subscriptions:
-                for subscription in subscriptions['items']:
-                    print(subscription['snippet']['title'])
+
+            # if 'items' in subscriptions:
+            #     for subscription in subscriptions['items']:
+            #         print(subscription['snippet']['title'])
 
             if 'items' in sublist:
-                sublist['items'].append(subscriptions['items'])
+                for sub in subscriptions['items']:
+                    sublist['items'].append(sub)
+
+            if not subscriptions.get('nextPageToken'):
+                break
 
         with open(self.dump_file, "w", encoding="utf-8") as deep:
             json.dump(sublist, deep)
 
-        self.user_buckets()
+        self.SubscriptionList = sublist
+        self.get_sublist()
 
     def user_buckets(self):
+        return self.Buckets.get_existing_buckets
+
+    def get_sublist(self) -> list:
         try:
-            with open(self.dump_file) as fp:
-                MyChannelList: dict = json.load(fp)
-                self.Buckets = Bucket(MyChannelList)
-        except FileExistsError:
-            print("Subscription List Does Not Exist. Use get_subscription Method")
+            with open(self.dump_file, "r", encoding="utf-8") as fp:
+                self.SubscriptionList: dict = json.load(fp)
+            self.Buckets.update_channel_list(self.SubscriptionList)
+            # if 'items' in self.SubscriptionList:
+            #     newlist = []
+            #     for sub in self.SubscriptionList['items']:
+            #         newlist.append(sub['snippet']['title'])
+            if type(self.SubscriptionList) is dict:
+                return self.SubscriptionList
+        except FileNotFoundError:
+            self.get_subscriptions()
 
     @staticmethod
-    def credentials() -> dict:
+    def credentials(cls) -> dict:
         """
         return class variable
             type: object
         """
-        print(User.__CREDENTIALS)
-        return User.__CREDENTIALS
-#
+        print(User.CREDENTIALS)
+        return User.CREDENTIALS
+
+    def get_recent_videos(self, channel_id):
+        try:
+            # Get the current time and the time 24 hours ago
+            now = datetime.datetime.now()
+            twenty_four_hours_ago = now - datetime.timedelta(hours=24)
+
+            # Make the API request to retrieve the videos
+            response = self.youtube.search().list(
+                part='snippet',
+                channelId=channel_id,
+                maxResults=50,  # Adjust the number of results as needed
+                publishedAfter=twenty_four_hours_ago.isoformat() + 'Z',  # ISO 8601 format
+                type='video'
+            ).execute()
+
+            # Extract the video details from the response
+            videos = response['items']
+            #video_ids = [video['id']['videoId'] for video in videos]
+
+            # Return the list of video IDs
+            return videos
+        except HttpError as e:
+            print('An error occurred:', e)
+            return []
+
+    def get_recent_videos_by_channel_name(self, channel_name):
+        try:
+            # Get the current time and the time 24 hours ago
+            now = datetime.datetime.now()
+            twenty_four_hours_ago = now - datetime.timedelta(hours=24)
+
+            # Make the API request to retrieve the videos
+            response = self.youtube.search().list(
+                part='snippet',
+                q=channel_name,
+                maxResults=50,  # Adjust the number of results as needed
+                publishedAfter=twenty_four_hours_ago.isoformat() + 'Z',  # ISO 8601 format
+                type='video'
+            ).execute()
+
+            # Extract the video details from the response
+            videos = response['items']
+            video_ids = [video['id']['videoId'] for video in videos]
+
+            # Return the list of video IDs
+            return video_ids
+        except HttpError as e:
+            print('An error occurred:', e)
+            return []
+
 # class User:
 #     def __init__(self, client_id, redirect_uri):
 #         self.client_id = client_id

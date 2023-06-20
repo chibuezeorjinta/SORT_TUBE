@@ -1,33 +1,35 @@
 #!/usr/bin/python3
+from typing import List, Any
+
+
 class Bucket:
-    def __init__(self, UserChannelList: dict = None):
+    def __init__(self):
+        self.BucketList: dict = dict()
+
+    def update_channel_list(self, UserChannelList: dict = None):
         if UserChannelList is None:
             print("Invalid Channel List")
         else:
             self.UserChannelList = UserChannelList
-        self.BucketList = {}
 
-    def create_bucket(self, BucketName: str, createlist: list = None):
+    def create_bucket(self, BucketName: str, CreateList: list = None):
         if BucketName is None:
             return "Enter Bucket Name"
-        if createlist is None:
+        if CreateList is None:
             self.BucketList[BucketName] = []
         else:
-            self.bucket_update(BucketName, createlist)
+            self.bucket_update(BucketName, CreateList)
 
-    def remove_channel(self, deletelist: list = None):
-        if deletelist is None:
-            return
-        else:
-            for item in deletelist:
-                for subscription in self.BucketList:
-                    if item in subscription['snippet']['title']:
-                        del subscription
-                        break
+    def remove_channel(self, BucketName: str, DeleteList: list = None):
+        if BucketName in self.BucketList.keys():
+            for sub in self.BucketList[BucketName]:
+                if sub in DeleteList:
+                    self.BucketList[BucketName].remove(sub)
+                    return True
 
     def bucket_update(self, BucketName, UpdateList):
         for subscription in self.UserChannelList['items']:
-            if subscription['snippet']['title'] in UpdateList:
+            if subscription in UpdateList:
                 self.BucketList[BucketName].append(subscription)
 
     @property
@@ -35,8 +37,11 @@ class Bucket:
         return self.BucketList
 
     @property
-    def get_existing_buckets(self) -> list:
-        return list(self.BucketList.keys())
+    def get_existing_buckets(self) -> bool | list[Any]:
+        if self.BucketList.keys() is None:
+            return False
+        else:
+            return list(self.BucketList.keys())
 
-    def get_bucket(self, bucketname) -> dict:
-        return self.BucketList[bucketname]
+    def get_bucket(self, BucketName) -> dict:
+        return self.BucketList[BucketName]

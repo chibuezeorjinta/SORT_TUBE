@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <title>Sort Tube</title>
+    <script>
+      var clickCount = 0;
+    
+      function handleSubscriptionClick() {
+        if (clickCount === 0) {
+          var currentURL = window.location.href;
+          var username = currentURL.split('/user/')[1].split('/')[0];
+          var route = "/user/" + username + "/Subscriptions";
+          window.location.href = route;
+        } else {
+          location.reload();
+        }
+    
+        clickCount++;
+      }
+    </script>
+    
+  </head>
+  <body>
+    <main>
+      <header>
+        <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo" alt="" />
+
+        <div class="search-container">
+          <div class="search-bar">
+            <input type="text" placeholder="search" />
+            <button class="search"><img src="{{ url_for('static', filename='img/search.svg') }}" alt="" /></button>
+          </div>
+          <button class="mic"><img src="{{ url_for('static', filename='img/mic.svg') }}" alt="" /></button>
+        </div>
+
+        <div class="profile">
+          <div class="notification">
+            <img src="{{ url_for('static', filename='img/notification.svg') }}" alt="" />
+          </div>
+          <div class="avatar"></div>
+          <button class="logout">Log out</button>
+        </div>
+      </header>
+      <div class="main_content">
+        <div class="sidebar">
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/user.svg') }}" alt="" /></div>
+            <div class="nav_title">{% block hello %}Hello, {{ username }}{% endblock %}</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/home.svg') }}" alt="" /></div>
+            <div class="nav_title" onclick="'/user/{{ username }}/Feed'">Home</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/categories.svg') }}" alt="" /></div>
+            <div class="nav_title" onclick="location.href='/user/{{ username }}/Buckets'">Buckets</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/subscription.svg') }}" alt="" /></div>
+            <div class="nav_title" onclick="handleSubscriptionClick()">Subscriptions</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/explore.svg') }}" alt="" /></div>
+            <div class="nav_title">Explore</div>
+          </div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/settings.svg') }}" alt="" /></div>
+            <div class="nav_title">Settings</div>
+          </div>
+          <div class="spacer"></div>
+          <div class="sidebar_nav-item">
+            <div class="icon"><img src="{{ url_for('static', filename='img/email.svg') }}" alt="" /></div>
+            <div class="nav_contact">
+              <p>contact info:</p>
+              <p>mail@sortubemail.com</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="content-wrapper">
+            <p>
+              {% block Mode %}
+                Recent Feed
+              {% endblock %}
+            </p>
+            {% block Content %}
+            <div class="feed-grid">
+              <div class="video-card">
+                <div class="video-card_thumbnail">
+                  <img src="{{ url_for('static', filename='img/video.png') }}" alt="" />
+                </div>
+                <div class="video-card_action_container">
+                  <div class="social-actions_buttons">
+                    <button class="social-action-button">
+                      <img src="{{ url_for('static', filename='img/heart.svg') }}" alt="" /></button
+                    ><button class="social-action-button">
+                      <img src="{{ url_for('static', filename='img/message.svg') }}" alt="" /></button
+                    ><button class="social-action-button">
+                      <img src="{{ url_for('static', filename='img/share.svg') }}" alt="" />
+                    </button>
+                    <div class="spacer"></div>
+                    <button class="social-action-button">
+                      <img src="{{ url_for('static', filename='img/menu.svg') }}" alt="" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endblock %}
+          </div>
+          <footer>SORTUBE</footer>
+        </div>
+      </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+  </body>
+</html>
+
+<script>
+
+</script>
